@@ -1,8 +1,12 @@
+//Include all directories pre-designated by complier
+#include <Wire.h>
+
+//Include all classes in this directory
+#include "IRTrackingCamera.h"
+
 // Wii Remote IR sensor  test sample code  by kako http://www.kako.com
 // modified output for Wii-BlobTrack program by RobotFreak http://www.letsmakerobots.com/user/1433
 // modified for http://DFRobot.com by Lumi, Jan. 2014
-
-#include <Wire.h>
 
 int IRsensorAddress = 0xB0;
 //int IRsensorAddress = 0x58;
