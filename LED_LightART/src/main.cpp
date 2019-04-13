@@ -6,6 +6,9 @@
 //Include all classes in this directory
 #include "IRTrackingCamera.h"
 
+//DEBUG s Prints
+//#define ph //uncomment for personhalo() function debugging
+
 // Number of LEDs on strip
 #define NUM_LEDS 300
 
@@ -59,13 +62,17 @@ void loop() {
 
 //Fucntion to light LEDS up
 int personHalo(int mathP){
-  Serial.println(mathP);
+
   int brightness = 256;
   long middle = (long)((float)mathP*0.393255132); //Decimal number: ratio of LEDs/sensor_value
-  Serial.println(middle);
   int step = (int)(maxBrightness/((float)threshold));
+
+  #ifdef ph
+  Serial.println(mathP);
+  Serial.println(middle);
   Serial.println("--------------");
   Serial.println(step);
+  #endif
 
 
   for(int i = 0; i < threshold*2; i++){
@@ -75,11 +82,20 @@ int personHalo(int mathP){
       leds[masterLed] = CRGB::White;
     }
     if(masterLed < middle){
+
+      #ifdef ph
       Serial.println(brightness);
+      #endif
+
       brightness = brightness - step;
       leds[masterLed].fadeLightBy(brightness);
+
     }else if(masterLed > middle){
+
+      #ifdef ph
       Serial.println(brightness);
+      #endif
+      
       brightness = brightness + step;
       leds[masterLed].fadeLightBy(brightness);
     }
