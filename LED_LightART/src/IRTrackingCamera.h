@@ -26,6 +26,7 @@ public:
   bool isPerson();
   int getz();
   int getx();
+  int getx2();
 
 private:
   int IRsensorAddress = 0xB0;

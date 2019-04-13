@@ -143,6 +143,10 @@ int IRTrackingCamera::getx(){
   return Iy[0];
 }
 
+int IRTrackingCamera::getx2(){
+  return Iy[1];
+}
+
 
 /**
 * Return x value for the IR emitter (person)

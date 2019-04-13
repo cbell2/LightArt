@@ -96,6 +96,13 @@ void draw() {
      prev = amt; 
     }
   
+  else if(amt < 0){
+    println("CLICK OUT OF RANGE");
+    amt = 0;
+  }else if(amt >= 5){
+    println("CLICK OUT OF RANGE");
+    amt = 5;
+  }
   else {
   
   if (amt == 4) {
