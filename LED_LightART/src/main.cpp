@@ -6,7 +6,7 @@
 //Include all classes in this directory
 #include "IRTrackingCamera.h"
 
-//DEBUG s Prints
+//DEBUG Prints
 //#define ph //uncomment for personhalo() function debugging
 
 // Number of LEDs on strip
@@ -25,8 +25,10 @@ int y[4];
 
 //LED stuff (bell curve)
 long middle = 0;
-int threshold = 1; //LED values on side of master LED
+int threshold = 2; //LED values on side of master LED
 float maxBrightness = 256.0;
+char person1 = 0;
+char person2 = 0;
 
 //Functionn signatures
 int personHalo(int mathP);
@@ -35,22 +37,41 @@ void setup() {
   camera.initialize();
 	delay(2000);
   FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, NUM_LEDS);
+  Serial.begin(9600);
 }
 
 void loop() {
-     camera.useSensor();
+     // camera.useSensor();
      //camera.showAll();
 
-     x[0] = camera.getx();
+     //Here is where the values from the camera are set
+     x[0] = 100;
      y[0] = camera.getz();
 
-     x[1] = camera.getx2();
+     x[1] = 5;
 
-     // leds[2] = CRGB::White;
+     //This should be done in processing since we will be using cv
+     if(x[0] > 0 && x[0] < 1023 && person1 == 0){
+       //Serial.println("hi");
+       Serial.println("1");
+       person1 = 1;
+     }else if(x[0] <= 0 || x[0] >= 1023){
+       person1 = 0;
+     }
+
+     if(x[1] > 0 && x[1] < 1023 && person2 == 0){
+       //Serial.println("hi");
+       Serial.println("2");
+       person2 = 1;
+     }else if(x[1] <= 0 || x[1] >= 1023){
+       person2 = 0;
+     }
+
+     //leds[2] = CRGB::White;
      // leds[2].fadeLightBy(200);
-
+     // x values have to be set TODO: make a parameter for LED color (this will be dependet on the music)
      personHalo(x[0]);
-     //personHalo(x[1]);
+     personHalo(x[1]);
 
       // Show the leds (only one of which is set to white, from above)
       FastLED.show();
@@ -95,7 +116,7 @@ int personHalo(int mathP){
       #ifdef ph
       Serial.println(brightness);
       #endif
-      
+
       brightness = brightness + step;
       leds[masterLed].fadeLightBy(brightness);
     }

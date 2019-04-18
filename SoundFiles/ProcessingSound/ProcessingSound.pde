@@ -1,3 +1,5 @@
+import processing.serial.*;
+
 // Note: this program runs only in the Processing IDE, not in the browser
 
 import ddf.minim.*;
@@ -19,6 +21,10 @@ String dStr;
 String bStr;
 String s1Str;
 String s2Str;
+
+//Serial com
+Serial myPort;
+String numObject = "";
 
 void setup() {
   size(400, 300);
@@ -52,7 +58,22 @@ void setup() {
   sound2 = minim.loadSample(s2Str, 2048);
   bass = minim.loadSample(bStr, 2048);
   drums = minim.loadSample(dStr, 2048);
+  
+  //Serial comm setup
+  //myPort = new Serial(this, "COM5", 9600);
+  //myPort.bufferUntil('\n');
 }
+
+void serialEvent(Serial myPort){
+  numObject = myPort.readStringUntil('\n');
+  numObject = trim(numObject);
+  try{
+    amt = Integer.parseInt(numObject);
+  } catch(RuntimeException e){
+    e.printStackTrace();
+  }
+}
+
 void draw() {
   
   rect(0, 0, 200, 300);
@@ -60,8 +81,8 @@ void draw() {
   rect(200, 0, 200, 300);
   fill(66, 244, 107);
  
-   //println("Amount: " + amt + " Previous: " + prev);
-   
+ 
+ //println("Amount: " + amt + " Previous: " + prev);  
   if (amt < prev) {
     println("ENTERED");
     if ((4 > amt) && (4 <= prev)) {
@@ -101,7 +122,7 @@ void draw() {
     amt = 0;
   }else if(amt >= 5){
     println("CLICK OUT OF RANGE");
-    amt = 5;
+    amt = 4;
   }
   else {
   
@@ -125,6 +146,7 @@ void draw() {
     
   }
 }
+
 void stop() {
   sound1.close();
   sound2.close();
