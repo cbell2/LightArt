@@ -328,6 +328,7 @@ void displayContoursBoundingBoxes() {
     }
     r4 = r.x;
     println("R1: " + r1 + " R2: " + r2 + " R3: " + r3 + " R4: " + r4);
+    
     noFill();
     stroke(255, 0, 0);
     strokeWeight(2);

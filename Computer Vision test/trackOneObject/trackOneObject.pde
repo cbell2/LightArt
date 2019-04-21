@@ -19,6 +19,10 @@
 import gab.opencv.*;
 import processing.video.*;
 import java.awt.Rectangle;
+import processing.serial.*;
+
+//Serial communciation with arduino
+Serial myPort;
 
 Capture video;
 OpenCV opencv;
@@ -33,24 +37,32 @@ int[] colors;
 int rangeWidth = 10;
 
 float xcoor;
-float ycoor; 
+float ycoor;
+int person1;
+int person2;
+int person3;
+int person4;
 
 PImage[] outputs;
 
 int colorToChange = -1;
 
 void setup() {
-  video = new Capture(this, 640, 480);
+  video = new Capture(this, 320, 180,Capture.list()[114],30);
   opencv = new OpenCV(this, video.width, video.height);
   contours = new ArrayList<Contour>();
   
-  size(830, 480, P2D);
+  size(830, 480, P2D);1
   
   // Array for detection colors
   colors = new int[maxColors];
   hues = new int[maxColors];
-  
   outputs = new PImage[maxColors];
+  
+  //Setup Serial port
+  myPort = new Serial(this,"COM10",9600);
+  delay(5000);
+  //myPort.bufferUntil('\n');
   
   video.start();
 }
@@ -97,11 +109,22 @@ void draw() {
   } else {
     text("press key [1-4] to select color", 10, 25);
   }
-  
+  sendToArduino();
   displayContoursBoundingBoxes();
-  println("x: " + xcoor + "y: " + ycoor);
+  
+  //println("x: " + xcoor + "y: " + ycoor);
 }
 
+void sendToArduino(){
+    //Send x values to arduino through serial
+  person1 = int(xcoor*0.25);
+  person2 = int(100*0.25);
+  person3 = int(300*0.25);
+  person4 = int(450*0.25);
+  
+  myPort.write(person1); //+ person3 + ";" + person4);
+  //println(person1 +" " + person2 +" " + person3+" " + person4);
+}
 //////////////////////
 // Detect Functions
 //////////////////////
@@ -167,7 +190,7 @@ void displayContoursBoundingBoxes() {
       
     noStroke();
     fill(255,0,0);
-    ellipse(xcoor, ycoor,30,30);
+    ellipse(xcoor, ycoor,5,5);
   }
 }
 

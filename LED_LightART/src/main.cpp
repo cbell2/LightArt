@@ -2,21 +2,29 @@
 //Include all directories pre-designated by complier
 #include <Wire.h>
 #include <FastLED.h>
+#include <LiquidCrystal_I2C.h>
 
 //Include all classes in this directory
 #include "IRTrackingCamera.h"
 
 //DEBUG Prints
 //#define ph //uncomment for personhalo() function debugging
+//#define lcdD //uncomment for Serial communication debugging
+
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Number of LEDs on strip
-#define NUM_LEDS 300
+#define NUM_LEDS 150
 
 // Data pin for LED digital controll
 #define DATA_PIN 7
+#define DATA_PIN2 8
 
 // An array object to map every LED
 CRGB leds[NUM_LEDS];
+String myStr = "0";
+int time = 0;
 
 // IRTrackingCamera initilaize
 IRTrackingCamera camera;
@@ -27,51 +35,74 @@ int y[4];
 long middle = 0;
 int threshold = 2; //LED values on side of master LED
 float maxBrightness = 256.0;
-char person1 = 0;
-char person2 = 0;
+
+//Serial communication packet variables
+String inData;
+String packetparsed;
 
 //Functionn signatures
 int personHalo(int mathP);
+void testParallelLeds();
+String getValue(String data, char separator, int index);
 
 void setup() {
-  camera.initialize();
-	delay(2000);
+
   FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2811, DATA_PIN2, RGB>(leds, NUM_LEDS);
+
+  //I2C LCD for debugging
+  lcd.begin();
+  lcd.backlight();
   Serial.begin(9600);
+
 }
 
 void loop() {
-     // camera.useSensor();
-     //camera.showAll();
 
      //Here is where the values from the camera are set
-     x[0] = 100;
-     y[0] = camera.getz();
+     if(Serial.available()>0){
+       char recieved = Serial.read();
 
-     x[1] = 5;
+       while(recieved != 'e'){
+         inData += recieved;
+         recieved = Serial.read();
+       }
 
-     //This should be done in processing since we will be using cv
-     if(x[0] > 0 && x[0] < 1023 && person1 == 0){
-       //Serial.println("hi");
-       Serial.println("1");
-       person1 = 1;
-     }else if(x[0] <= 0 || x[0] >= 1023){
-       person1 = 0;
-     }
+       for(int i = 0; i < 4; i++){
+         packetparsed = getValue(inData, ';', i);
+         x[i] = packetparsed.toInt();
+       }
+       inData = "";
 
-     if(x[1] > 0 && x[1] < 1023 && person2 == 0){
-       //Serial.println("hi");
-       Serial.println("2");
-       person2 = 1;
-     }else if(x[1] <= 0 || x[1] >= 1023){
-       person2 = 0;
-     }
+      #ifdef lcdD
+      delay(500);
+      lcd.clear();
+      lcd.print(x[0]);
+      lcd.setCursor(8,0);
+      lcd.print(x[1]);
+      lcd.setCursor(0,1);
+      lcd.print(x[2]);
+      lcd.setCursor(8,1);
+      lcd.print(x[3]);
+      #endif
+    }
 
-     //leds[2] = CRGB::White;
+ //   if(time = 100){
+ //    lcd.clear();
+ //   lcd.print(String(x[0]));
+ //   Serial.println(x[0]);
+ //   time = 0;
+ // }else{
+ //   time++;
+ // }
+       //leds[2] = CRGB::White;
      // leds[2].fadeLightBy(200);
      // x values have to be set TODO: make a parameter for LED color (this will be dependet on the music)
-     personHalo(x[0]);
-     personHalo(x[1]);
+     for(int i = 0; i < 4; i++){
+       if(!(x[i] < 0 || x[i] > NUM_LEDS)){
+         personHalo(x[i]);
+       }
+     }
 
       // Show the leds (only one of which is set to white, from above)
       FastLED.show();
@@ -79,13 +110,15 @@ void loop() {
       // Wait a little bit
       delay(50);
       FastLED.clear();
+      //lcd.clear();
+
 }
 
 //Fucntion to light LEDS up
 int personHalo(int mathP){
 
-  int brightness = 256;
-  long middle = (long)((float)mathP*0.393255132); //Decimal number: ratio of LEDs/sensor_value
+  int brightness = 100;
+  long middle = (long)((float)mathP); //Decimal number: ratio of LEDs/sensor_value
   int step = (int)(maxBrightness/((float)threshold));
 
   #ifdef ph
@@ -121,4 +154,28 @@ int personHalo(int mathP){
       leds[masterLed].fadeLightBy(brightness);
     }
   }
+}
+
+void testParallelLeds(){
+  for(int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CRGB::Red;    // set our current dot to red
+    FastLED.show();
+    leds[i] = CRGB::Black;  //0x27 set our current dot to black before we continue
+  }
+}
+
+String getValue(String data, char separator, int index)
+{
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
+
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
+    }
+    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
