@@ -42,6 +42,7 @@ String packetparsed;
 char recieved;
 int currentp;
 int previousp;
+int packetthres = 25;
 
 //Functionn signatures
 int personHalo(int mathP);
@@ -57,11 +58,11 @@ void setup() {
   lcd.begin();
   lcd.backlight();
 
-  x[0] =  20;
-  x[1] =  60;
-  x[2] =  120;
-  x[3] =  150;
-  previousp = 118;
+  x[0] =  0;
+  x[1] =  0;
+  x[2] =  0;
+  x[3] =  0;
+  previousp = 0;
 
   Serial.begin(9600);
 
@@ -83,7 +84,7 @@ void loop() {
          packetparsed = getValue(inData, ';', 1);
          currentp = packetparsed.toInt();
 
-         if(currentp < previousp + 20 && currentp > previousp - 20){
+         if(currentp < previousp + packetthres && currentp > previousp - packetthres){
            x[0] = currentp;
            previousp = x[0];
        }
