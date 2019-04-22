@@ -39,6 +39,9 @@ float maxBrightness = 256.0;
 //Serial communication packet variables
 String inData;
 String packetparsed;
+char recieved;
+int currentp;
+int previousp;
 
 //Functionn signatures
 int personHalo(int mathP);
@@ -53,6 +56,13 @@ void setup() {
   //I2C LCD for debugging
   lcd.begin();
   lcd.backlight();
+
+  x[0] =  20;
+  x[1] =  60;
+  x[2] =  120;
+  x[3] =  150;
+  previousp = 118;
+
   Serial.begin(9600);
 
 }
@@ -61,17 +71,28 @@ void loop() {
 
      //Here is where the values from the camera are set
      if(Serial.available()>0){
-       char recieved = Serial.read();
+       recieved = Serial.read();
 
-       while(recieved != 'e'){
-         inData += recieved;
-         recieved = Serial.read();
-       }
+       if(recieved == 's'){
+         while(recieved != 'e'){
+           inData += recieved;
+           recieved = Serial.read();
+           //lcd.print("HI");
+         }
 
-       for(int i = 0; i < 4; i++){
-         packetparsed = getValue(inData, ';', i);
-         x[i] = packetparsed.toInt();
+         packetparsed = getValue(inData, ';', 1);
+         currentp = packetparsed.toInt();
+
+         if(currentp < previousp + 20 && currentp > previousp - 20){
+           x[0] = currentp;
+           previousp = x[0];
        }
+         // packetparsed = getValue(inData, ';', 1);
+         // x[1] = packetparsed.toInt();
+         // packetparsed = getValue(inData, ';', 2);
+         // x[2] = packetparsed.toInt();
+         // packetparsed = getValue(inData, ';', 3);
+         // x[3] = packetparsed.toInt();
        inData = "";
 
       #ifdef lcdD
@@ -86,23 +107,20 @@ void loop() {
       lcd.print(x[3]);
       #endif
     }
+  }
 
- //   if(time = 100){
- //    lcd.clear();
- //   lcd.print(String(x[0]));
- //   Serial.println(x[0]);
- //   time = 0;
- // }else{
- //   time++;
- // }
-       //leds[2] = CRGB::White;
-     // leds[2].fadeLightBy(200);
+
      // x values have to be set TODO: make a parameter for LED color (this will be dependet on the music)
-     for(int i = 0; i < 4; i++){
-       if(!(x[i] < 0 || x[i] > NUM_LEDS)){
-         personHalo(x[i]);
-       }
-     }
+     // for(int i = 0; i < 4; i++){
+     //  // if(!(x[i] < 0 || x[i] > NUM_LEDS)){
+     //     personHalo(x[i]);
+     //  // }
+     // }
+
+      personHalo(x[0]);
+      // personHalo(x[1]);
+      // personHalo(x[2]);
+      // personHalo(x[3]);
 
       // Show the leds (only one of which is set to white, from above)
       FastLED.show();

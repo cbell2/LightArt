@@ -60,7 +60,7 @@ void draw() {
   rect(200, 0, 200, 300);
   fill(66, 244, 107);
   
-  String[] str = loadStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt");
+  String[] str = loadStrings("/Users/JosuD/Documents/Light Art/code_lightart/ComputerVisionMultiObj/amt.txt");
   amt = Integer.parseInt(str[0]);
  
    //println("Amount: " + amt + " Previous: " + prev);

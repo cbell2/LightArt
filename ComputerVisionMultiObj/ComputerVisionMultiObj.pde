@@ -50,6 +50,7 @@ int rangeWidth = 10;
 
 float xcoor;
 float ycoor; 
+float ratio = 0.23;
 
 PImage[] outputs;
 
@@ -59,9 +60,10 @@ void setup() {
   
    String strAmt = str(0);
    String[] str = split(strAmt, ' ');
-   saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+   saveStrings("amt.txt", str);
   
-  video = new Capture(this, 640, 480);
+  //video = new Capture(this, 320,180,Capture.list()[114],30);
+  video = new Capture(this, 640,480,Capture.list()[104],30);
   opencv = new OpenCV(this, video.width, video.height);
   contour1 = new ArrayList<Contour>();
   contour2 = new ArrayList<Contour>();
@@ -82,6 +84,17 @@ void setup() {
 }
 
 void draw() {
+  
+  // LED Location Logic
+     String loc1 = str(int(r1*ratio));
+     String loc2 = str(int(r2*ratio));
+     String loc3 = str(int(r3*ratio));
+     String loc4 = str(int(r4*ratio));
+     //---unitl here we good------
+     String locTotal = "s;" + loc1 + ";e";// + loc2 + ";" + loc3 + ";" + loc4 + "e";
+     String[] strLoc = split(locTotal, ' ');
+     saveStrings("LEDLocation.txt", strLoc);
+     println("R1: " + loc1 );//+ " R2: " + r2 + " R3: " + r3 + " R4: " + r4);
   
   background(150);
   
@@ -196,7 +209,7 @@ void displayContoursBoundingBoxes() {
         amt--;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset1 = 1;
       }
       continue;
@@ -206,7 +219,7 @@ void displayContoursBoundingBoxes() {
         amt++;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset1 = 0;
     }
     r1 = r.x;
@@ -235,7 +248,7 @@ void displayContoursBoundingBoxes() {
         amt--;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset2 = 1;
       }
       continue;
@@ -245,7 +258,7 @@ void displayContoursBoundingBoxes() {
         amt++;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset2 = 0;
     }
     r2 = r.x;
@@ -274,7 +287,7 @@ void displayContoursBoundingBoxes() {
         amt--;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset3 = 1;
       }
       continue;
@@ -284,7 +297,7 @@ void displayContoursBoundingBoxes() {
         amt++;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset3 = 0;
     }
     r3 = r.x;
@@ -313,7 +326,7 @@ void displayContoursBoundingBoxes() {
         amt--;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset4 = 1;
       }
       continue;
@@ -323,12 +336,11 @@ void displayContoursBoundingBoxes() {
         amt++;
         String strAmt = str(amt);
         String[] str = split(strAmt, ' ');
-        saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
+        saveStrings("amt.txt", str);
         reset4 = 0;
     }
     r4 = r.x;
-    println("R1: " + r1 + " R2: " + r2 + " R3: " + r3 + " R4: " + r4);
-    
+        
     noFill();
     stroke(255, 0, 0);
     strokeWeight(2);
@@ -369,31 +381,15 @@ void keyPressed() {
   
   if (key == '1') {
     colorToChange = 1;
-    //amt++;
-    //String strAmt = str(amt);
-    //String[] str = split(strAmt, ' ');
-    //saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
     
   } else if (key == '2') {
     colorToChange = 2;
-    //amt++;
-    //String strAmt = str(amt);
-    //String[] str = split(strAmt, ' ');
-    //saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
     
   } else if (key == '3') {
     colorToChange = 3;
-    //amt++;
-    //String strAmt = str(amt);
-    //String[] str = split(strAmt, ' ');
-    //saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
     
   } else if (key == '4') {
     colorToChange = 4;
-    //amt++;
-    //String strAmt = str(amt);
-    //String[] str = split(strAmt, ' ');
-    //saveStrings("/Users/chrisbell/Dropbox/Junior Year/D-Term/HU 3910/amt.txt", str);
   }
 }
 
