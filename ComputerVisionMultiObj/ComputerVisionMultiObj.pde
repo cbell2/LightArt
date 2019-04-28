@@ -50,7 +50,8 @@ int rangeWidth = 10;
 
 float xcoor;
 float ycoor; 
-float ratio = 0.23;
+//x LEDS/150 LEDS * y camera/600 Camera
+float ratio = 0.24;
 
 PImage[] outputs;
 

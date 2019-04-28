@@ -32,8 +32,8 @@ int x[4];
 int y[4];
 
 //LED stuff (bell curve)
-long middle = 0;
-int threshold = 2; //LED values on side of master LED
+long middle = 15;
+int threshold = 15; //LED values on side of master LED
 float maxBrightness = 256.0;
 
 //Serial communication packet variables
@@ -42,7 +42,7 @@ String packetparsed;
 char recieved;
 int currentp;
 int previousp;
-int packetthres = 25;
+int packetthres = 40;
 
 //Functionn signatures
 int personHalo(int mathP);
@@ -58,11 +58,11 @@ void setup() {
   lcd.begin();
   lcd.backlight();
 
-  x[0] =  0;
+  x[0] =  10;
   x[1] =  0;
   x[2] =  0;
   x[3] =  0;
-  previousp = 0;
+  previousp = 10;
 
   Serial.begin(9600);
 
@@ -147,32 +147,39 @@ int personHalo(int mathP){
   Serial.println(step);
   #endif
 
-
   for(int i = 0; i < threshold*2; i++){
     int masterLed = i+middle-threshold;
     if(masterLed < 0 || masterLed > NUM_LEDS){
     }else{
       leds[masterLed] = CRGB::White;
     }
-    if(masterLed < middle){
-
-      #ifdef ph
-      Serial.println(brightness);
-      #endif
-
-      brightness = brightness - step;
-      leds[masterLed].fadeLightBy(brightness);
-
-    }else if(masterLed > middle){
-
-      #ifdef ph
-      Serial.println(brightness);
-      #endif
-
-      brightness = brightness + step;
-      leds[masterLed].fadeLightBy(brightness);
-    }
   }
+
+  // for(int i = 0; i < threshold*2; i++){
+  //   int masterLed = i+middle-threshold;
+  //   if(masterLed < 0 || masterLed > NUM_LEDS){
+  //   }else{
+  //     leds[masterLed] = CRGB::White;
+  //   }
+  //   if(masterLed < middle){
+  //
+  //     #ifdef ph
+  //     Serial.println(brightness);
+  //     #endif
+  //
+  //     brightness = brightness - step;
+  //     leds[masterLed].fadeLightBy(brightness);
+  //
+  //   }else if(masterLed > middle){
+  //
+  //     #ifdef ph
+  //     Serial.println(brightness);
+  //     #endif
+  //
+  //     brightness = brightness + step;
+  //     leds[masterLed].fadeLightBy(brightness);
+  //   }
+  // }
 }
 
 void testParallelLeds(){
