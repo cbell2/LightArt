@@ -46,7 +46,7 @@ ArrayList<Contour> contour4;
 int maxColors = 4;
 int[] hues;
 int[] colors;
-int rangeWidth = 10;
+int rangeWidth = 9;
 
 float xcoor;
 float ycoor; 
@@ -92,10 +92,10 @@ void draw() {
      String loc3 = str(int(r3*ratio));
      String loc4 = str(int(r4*ratio));
      //---unitl here we good------
-     String locTotal = "s;" + loc1 + ";e";// + loc2 + ";" + loc3 + ";" + loc4 + "e";
+     String locTotal = "s;" + loc1 + ";" + loc2 + ";" + loc3 + ";" + loc4 + ";e";
      String[] strLoc = split(locTotal, ' ');
      saveStrings("LEDLocation.txt", strLoc);
-     println("R1: " + loc1 );//+ " R2: " + r2 + " R3: " + r3 + " R4: " + r4);
+     println("R1: " + loc1 + " R2: " + loc2 + " R3: " + loc3 + " R4: " + loc4);
   
   background(150);
   

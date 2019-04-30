@@ -4,9 +4,6 @@
 #include <FastLED.h>
 #include <LiquidCrystal_I2C.h>
 
-//Include all classes in this directory
-#include "IRTrackingCamera.h"
-
 //DEBUG Prints
 //#define ph //uncomment for personhalo() function debugging
 //#define lcdD //uncomment for Serial communication debugging
@@ -26,28 +23,36 @@ CRGB leds[NUM_LEDS];
 String myStr = "0";
 int time = 0;
 
-// IRTrackingCamera initilaize
-IRTrackingCamera camera;
-int x[4];
-int y[4];
-
 //LED stuff (bell curve)
 long middle = 15;
-int threshold = 15; //LED values on side of master LED
+int threshold = 12; //LED values on side of master LED
 float maxBrightness = 256.0;
 
 //Serial communication packet variables
 String inData;
-String packetparsed;
 char recieved;
+String packetparsed;
 int currentp;
 int previousp;
-int packetthres = 40;
+
+String packetparsed1;
+int currentp1;
+int previousp1;
+
+String packetparsed2;
+int currentp2;
+int previousp2;
+
+String packetparsed3;
+int currentp3;
+int previousp3;
+int packetthres = 25;
 
 //Functionn signatures
-int personHalo(int mathP);
+int personHalo(int mathP,unsigned long color);
 void testParallelLeds();
 String getValue(String data, char separator, int index);
+int x[4];
 
 void setup() {
 
@@ -57,6 +62,7 @@ void setup() {
   //I2C LCD for debugging
   lcd.begin();
   lcd.backlight();
+  lcd.print("Spotlight Mix");
 
   x[0] =  10;
   x[1] =  0;
@@ -69,6 +75,10 @@ void setup() {
 }
 
 void loop() {
+
+//    for(int i = 0; i < 20; i++){
+//    leds[i] = 0xFFFFFF; 
+//  }
 
      //Here is where the values from the camera are set
      if(Serial.available()>0){
@@ -87,13 +97,31 @@ void loop() {
          if(currentp < previousp + packetthres && currentp > previousp - packetthres){
            x[0] = currentp;
            previousp = x[0];
-       }
-         // packetparsed = getValue(inData, ';', 1);
-         // x[1] = packetparsed.toInt();
-         // packetparsed = getValue(inData, ';', 2);
-         // x[2] = packetparsed.toInt();
-         // packetparsed = getValue(inData, ';', 3);
-         // x[3] = packetparsed.toInt();
+          }
+
+         packetparsed1 = getValue(inData, ';', 2);
+         currentp1 = packetparsed1.toInt();
+
+         if(currentp1 < previousp1 + packetthres && currentp1 > previousp1 - packetthres){
+           x[1] = currentp1;
+           previousp1 = x[1];
+          }
+
+         packetparsed2 = getValue(inData, ';', 3);
+         currentp2 = packetparsed2.toInt();
+
+         if(currentp2 < previousp2 + packetthres && currentp2 > previousp2 - packetthres){
+           x[2] = currentp2;
+           previousp2 = x[2];
+          }
+
+         packetparsed3 = getValue(inData, ';', 4);
+         currentp3 = packetparsed3.toInt();
+
+         if(currentp3 < previousp3 + packetthres && currentp3 > previousp3 - packetthres){
+           x[3] = currentp3;
+           previousp3 = x[3];
+          }
        inData = "";
 
       #ifdef lcdD
@@ -110,19 +138,18 @@ void loop() {
     }
   }
 
-
-     // x values have to be set TODO: make a parameter for LED color (this will be dependet on the music)
-     // for(int i = 0; i < 4; i++){
-     //  // if(!(x[i] < 0 || x[i] > NUM_LEDS)){
-     //     personHalo(x[i]);
-     //  // }
-     // }
-
-      personHalo(x[0]);
-      // personHalo(x[1]);
-      // personHalo(x[2]);
-      // personHalo(x[3]);
-
+      if(x[0] > 0){
+      personHalo(x[0], 0xFFFFFF); //white
+      }
+      if(x[1] > 0){
+        personHalo(x[1],0xFFFFFF); //red
+      }
+      if(x[2] > 0){
+      personHalo(x[2],0xFFFFFF); //gold
+      }
+      if(x[3] > 0){
+      personHalo(x[3],0xFFFFFF); //green
+      }
       // Show the leds (only one of which is set to white, from above)
       FastLED.show();
 
@@ -134,7 +161,7 @@ void loop() {
 }
 
 //Fucntion to light LEDS up
-int personHalo(int mathP){
+int personHalo(int mathP, unsigned long color){
 
   int brightness = 100;
   long middle = (long)((float)mathP); //Decimal number: ratio of LEDs/sensor_value
@@ -151,35 +178,9 @@ int personHalo(int mathP){
     int masterLed = i+middle-threshold;
     if(masterLed < 0 || masterLed > NUM_LEDS){
     }else{
-      leds[masterLed] = CRGB::White;
+      leds[masterLed] = color;
     }
   }
-
-  // for(int i = 0; i < threshold*2; i++){
-  //   int masterLed = i+middle-threshold;
-  //   if(masterLed < 0 || masterLed > NUM_LEDS){
-  //   }else{
-  //     leds[masterLed] = CRGB::White;
-  //   }
-  //   if(masterLed < middle){
-  //
-  //     #ifdef ph
-  //     Serial.println(brightness);
-  //     #endif
-  //
-  //     brightness = brightness - step;
-  //     leds[masterLed].fadeLightBy(brightness);
-  //
-  //   }else if(masterLed > middle){
-  //
-  //     #ifdef ph
-  //     Serial.println(brightness);
-  //     #endif
-  //
-  //     brightness = brightness + step;
-  //     leds[masterLed].fadeLightBy(brightness);
-  //   }
-  // }
 }
 
 void testParallelLeds(){
